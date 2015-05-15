@@ -5,8 +5,9 @@
 ## then this will check to see if the file names are  ##
 ## in the correct format then copy to TV completed    ##
 ## folder and then run theRenamer program to rename   ##
-## and move them to D: drive. Next have Plex refresh  ##
-## and add them into the Plex server                  ##
+## and move them to D: drive. Check to see what files ##
+## were renamed & print them. Next have Plex refresh  ##
+## and add them into the Plex server.                 ##
 ##                                                    ## 
 ## by Paul Castillo                                   ##  
 ########################################################
@@ -45,16 +46,16 @@ try {
         Where-Object { $_.Name -match '(\d{1})(\d{2})'} | Move-Item -Dest {$_.FullName -replace '(\d{1})(\d{2})', 's0$1e$2'}
 
 	 Write-Host "Copying new files to TV Completed folder."
-	 #Copy-WithProgress -Source $Source -Destination $Destination -Verbose
      robocopy "C:\Users\Paul\Documents\Vuze Completed" "C:\Users\Paul\Documents\Vuze TV Completed" *.mkv *.avi *.mp4 /S /XF "*sample*"
 	 Write-Host "Renaming tvshow with correct names..." -ForegroundColor yellow
      Start-Process 'C:\Program Files (x86)\theRenamer\theRenamer.exe' -Wait -ArgumentList '-fetch'
 	 Write-Host "Checking to see what shows were renamed correctly." -ForegroundColor yellow
+	 # Run function to check theRenamer logs for shows that were renamed. 
 	 CheckTVShows
      # Delete all files in the 'Vuze TV Completed' 
-      Get-ChildItem -Path $Destination -Include *.* -File -Recurse | foreach { $_.Delete()}
+     Get-ChildItem -Path $Destination -Include *.* -File -Recurse | foreach { $_.Delete()}
      # Delete all empty folders in 'Vuze TV Completed'
-      dir "C:\Users\Paul\Documents\Vuze TV Completed\*" | foreach { [io.directory]::delete($_.fullname) }
+     dir "C:\Users\Paul\Documents\Vuze TV Completed\*" | foreach { [io.directory]::delete($_.fullname) }
      $a = Get-Date
 	 Write-Host "Done. Time is: $a" -ForegroundColor Red
 	}
